@@ -1,5 +1,6 @@
 package com.zarpar.controller;
 
+import com.zarpar.domain.Categoria;
 import com.zarpar.domain.PontoTuristico;
 import com.zarpar.dto.PontoTuristicoRequest;
 import com.zarpar.dto.PontoTuristicoResponse;
@@ -27,9 +28,11 @@ public class PontoTuristicoController {
 
     @GetMapping
     public ResponseEntity<Page<PontoTuristicoResponse>> listar(
+            @RequestParam(required = false) String cidade,
+            @RequestParam(required = false) Categoria categoria,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<PontoTuristicoResponse> page = service.listarTodos(pageable)
+        Page<PontoTuristicoResponse> page = service.listar(cidade, categoria, pageable)
                 .map(PontoTuristicoResponse::new);
         return ResponseEntity.ok(page);
     }

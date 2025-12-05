@@ -9,6 +9,9 @@ export interface PontoTuristico {
   comoChegar?: string;
   latitude?: number;
   longitude?: number;
+
+  categoria?: 'NATUREZA' | 'HISTORICO' | 'URBANO' | 'PRAIA' | 'AVENTURA' | 'RELIGIOSO' | 'OUTRO';
+
   criadoPorId: number;
   criadoPorNome: string;
 }
@@ -23,6 +26,8 @@ export interface PontoRequest {
   comoChegar?: string;
   latitude?: number;
   longitude?: number;
+
+  categoria?: string;
 }
 
 export interface Page<T> {
