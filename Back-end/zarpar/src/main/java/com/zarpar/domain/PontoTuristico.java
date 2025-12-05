@@ -38,11 +38,14 @@ public class PontoTuristico {
     @JoinColumn(name = "criado_por_id", nullable = false)
     private Usuario criadoPor;
 
+    @Enumerated(EnumType.STRING)
+    private Categoria categoria; // Novo campo
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public PontoTuristico() {}
 
-    public PontoTuristico(String nome, String descricao, String cidade, String estado, String pais, String endereco, String comoChegar, BigDecimal latitude, BigDecimal longitude, Usuario criadoPor) {
+    public PontoTuristico(String nome, String descricao, String cidade, String estado, String pais, String endereco, String comoChegar, BigDecimal latitude, BigDecimal longitude, Usuario criadoPor,  Categoria categoria) {
         this.nome = nome;
         this.descricao = descricao;
         this.cidade = cidade;
@@ -54,6 +57,7 @@ public class PontoTuristico {
         this.longitude = longitude;
         this.criadoPor = criadoPor;
         this.createdAt = LocalDateTime.now();
+        this.categoria = categoria;
     }
 
     public Long getId() { return id; }
@@ -79,4 +83,6 @@ public class PontoTuristico {
     public Usuario getCriadoPor() { return criadoPor; }
     public void setCriadoPor(Usuario criadoPor) { this.criadoPor = criadoPor; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public Categoria getCategoria() { return categoria; }
+    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
 }

@@ -1,5 +1,6 @@
 package com.zarpar.service;
 
+import com.zarpar.domain.Categoria;
 import com.zarpar.domain.PontoTuristico;
 import com.zarpar.domain.Role;
 import com.zarpar.domain.Usuario;
@@ -24,8 +25,15 @@ public class PontoTuristicoService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public Page<PontoTuristico> listarTodos(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<PontoTuristico> listar(String cidade, Categoria categoria, Pageable pageable) {
+
+        String termoCidade = null;
+
+        if (cidade != null && !cidade.isBlank()) {
+            termoCidade = "%" + cidade + "%";
+        }
+
+        return repository.buscarComFiltros(termoCidade, categoria, pageable);
     }
 
     public PontoTuristico buscarPorId(Long id) {
@@ -45,7 +53,7 @@ public class PontoTuristicoService {
         PontoTuristico p = new PontoTuristico(
                 req.getNome(), req.getDescricao(), req.getCidade(),
                 req.getEstado(), req.getPais(), req.getEndereco(), req.getComoChegar(),
-                req.getLatitude(), req.getLongitude(), usuario
+                req.getLatitude(), req.getLongitude(), usuario, req.getCategoria()
         );
 
         return repository.save(p);
@@ -70,6 +78,7 @@ public class PontoTuristicoService {
         p.setComoChegar(req.getComoChegar());
         p.setLatitude(req.getLatitude());
         p.setLongitude(req.getLongitude());
+        p.setCategoria(req.getCategoria());
 
         return repository.save(p);
     }

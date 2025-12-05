@@ -1,14 +1,15 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router'; // Adicionei RouterLink de volta para os botões funcionarem
 import { PontoService } from '../../core/services/ponto.service';
 import { AuthService } from '../../core/services/auth.service';
-import { PontoTuristico } from '../../core/models/ponto.model';
+import { PontoTuristico } from '../../core/models/ponto.model'; // Verifique se o caminho é .models ou .model
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink], // RouterLink é essencial para os botões
   template: `
     <div class="bg-light py-5 mb-5">
       <div class="container text-center">
@@ -28,7 +29,41 @@ import { PontoTuristico } from '../../core/models/ponto.model';
     </div>
 
     <div class="container pb-5">
-      <h3 class="mb-4">Pontos Turísticos Recentes</h3>
+
+      <div class="card p-3 mb-4 shadow-sm bg-light">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Filtrar por cidade..."
+                   [(ngModel)]="filtroCidade" (keyup.enter)="aplicarFiltros()">
+          </div>
+          <div class="col-md-3">
+            <select class="form-select" [(ngModel)]="filtroCategoria" (change)="aplicarFiltros()">
+              <option value="">Todas as Categorias</option>
+              <option value="NATUREZA">Natureza</option>
+              <option value="HISTORICO">Histórico</option>
+              <option value="URBANO">Urbano</option>
+              <option value="PRAIA">Praia</option>
+              <option value="AVENTURA">Aventura</option>
+              <option value="RELIGIOSO">Religioso</option>
+              <option value="OUTRO">Outro</option>
+            </select>
+          </div>
+          <div class="col-md-2 d-grid">
+            <button class="btn btn-primary" (click)="aplicarFiltros()">Filtrar</button>
+          </div>
+        </div>
+
+        @if (filtroCidade() || filtroCategoria() || filtroNota()) {
+          <div class="mt-2">
+            <small class="text-muted">Filtros ativos: </small>
+            <button class="btn btn-link btn-sm text-decoration-none" (click)="limparFiltros()">Limpar tudo</button>
+          </div>
+        }
+      </div>
+
+      <p class="text-muted mb-3">
+        Mostrando {{ pontos().length }} de {{ totalElements() }} resultados
+      </p>
 
       @if (isLoading()) {
         <div class="text-center py-5">
@@ -38,31 +73,26 @@ import { PontoTuristico } from '../../core/models/ponto.model';
         </div>
       }
 
-      @if (!isLoading() && pontos().length === 0) {
-        <div class="alert alert-info text-center">
-          Nenhum ponto turístico cadastrado ainda. Seja o primeiro!
-        </div>
-      }
-
       <div class="row">
         @for (ponto of pontos(); track ponto.id) {
           <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm border-0">
 
               <div class="bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 200px;">
-                <span class="text-muted"><i class="bi bi-image fs-1"></i></span>
+                <span class="text-muted fs-1">📷</span>
               </div>
 
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                   <h5 class="card-title mb-0">{{ ponto.nome }}</h5>
-                  @if (ponto.estado) {
-                    <span class="badge bg-light text-dark border">{{ ponto.estado }}</span>
+                  @if (ponto.categoria) {
+                    <span class="badge bg-info text-dark">{{ ponto.categoria }}</span>
                   }
                 </div>
 
                 <h6 class="card-subtitle text-muted mb-2 small">
-                  <i class="bi bi-geo-alt-fill text-danger"></i> {{ ponto.cidade }}
+                  📍 {{ ponto.cidade }}
+                  @if (ponto.estado) { - {{ ponto.estado }} }
                 </h6>
 
                 <p class="card-text text-truncate" style="max-height: 3em;">
@@ -70,23 +100,18 @@ import { PontoTuristico } from '../../core/models/ponto.model';
                 </p>
 
                 <p class="small text-muted mb-0">
-                  Cadastrado por: <strong>{{ ponto.criadoPorNome }}</strong>
+                  Criado por: <strong>{{ ponto.criadoPorNome }}</strong>
                 </p>
               </div>
 
               <div class="card-footer bg-white border-top-0 pb-3 pt-0">
                 <div class="d-flex justify-content-between align-items-center">
-
                   <button class="btn btn-sm btn-outline-primary">Ver Detalhes</button>
 
                   @if (canEdit(ponto)) {
                     <div class="btn-group">
-                      <a [routerLink]="['/pontos/editar', ponto.id]" class="btn btn-sm btn-outline-secondary" title="Editar">
-                        ✏️
-                      </a>
-                      <button class="btn btn-sm btn-outline-danger" (click)="excluir(ponto)" title="Excluir">
-                        🗑️
-                      </button>
+                      <a [routerLink]="['/pontos/editar', ponto.id]" class="btn btn-sm btn-outline-secondary">✏️</a>
+                      <button class="btn btn-sm btn-outline-danger" (click)="excluir(ponto)">🗑️</button>
                     </div>
                   }
                 </div>
@@ -96,46 +121,97 @@ import { PontoTuristico } from '../../core/models/ponto.model';
           </div>
         }
       </div>
+
+      @if (!isLoading() && pontos().length === 0) {
+        <div class="alert alert-warning text-center mt-3">
+          Nenhum ponto turístico encontrado com estes filtros.
+        </div>
+      }
+
+      @if (totalPages() > 1) {
+        <nav class="mt-4">
+          <ul class="pagination justify-content-center">
+            <li class="page-item" [class.disabled]="currentPage() === 0">
+              <button class="page-link" (click)="mudarPagina(currentPage() - 1)">Anterior</button>
+            </li>
+
+            <li class="page-item disabled">
+              <span class="page-link">Página {{ currentPage() + 1 }} de {{ totalPages() }}</span>
+            </li>
+
+            <li class="page-item" [class.disabled]="currentPage() === totalPages() - 1">
+              <button class="page-link" (click)="mudarPagina(currentPage() + 1)">Próxima</button>
+            </li>
+          </ul>
+        </nav>
+      }
+
     </div>
   `
 })
 export class HomeComponent implements OnInit {
-
+  // ... (O código TypeScript da classe pode manter o mesmo que você já tem)
   private pontoService = inject(PontoService);
   public authService = inject(AuthService);
 
   pontos = signal<PontoTuristico[]>([]);
+  totalElements = signal(0);
+  totalPages = signal(0);
+  currentPage = signal(0);
   isLoading = signal(true);
+
+  filtroCidade = signal('');
+  filtroCategoria = signal('');
+  filtroNota = signal('');
 
   ngOnInit() {
     this.carregarPontos();
   }
 
-  carregarPontos() {
+  carregarPontos(page: number = 0) {
     this.isLoading.set(true);
-    this.pontoService.listar(0, 20).subscribe({
-      next: (page) => {
-        this.pontos.set(page.content);
+    const filtros = {
+      cidade: this.filtroCidade() || undefined,
+      categoria: this.filtroCategoria() || undefined,
+    };
+
+    this.pontoService.listar(page, 10, filtros).subscribe({
+      next: (resp) => {
+        this.pontos.set(resp.content);
+        this.totalElements.set(resp.totalElements);
+        this.totalPages.set(resp.totalPages);
+        this.currentPage.set(resp.number);
         this.isLoading.set(false);
       },
-      error: (err) => {
-        console.error('Erro ao carregar pontos', err);
-        this.isLoading.set(false);
-      }
+      error: () => this.isLoading.set(false)
     });
+  }
+
+  aplicarFiltros() { this.carregarPontos(0); }
+
+  limparFiltros() {
+    this.filtroCidade.set('');
+    this.filtroCategoria.set('');
+    this.filtroNota.set('');
+    this.carregarPontos(0);
+  }
+
+  mudarPagina(pagina: number) {
+    if (pagina >= 0 && pagina < this.totalPages()) {
+      this.carregarPontos(pagina);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   canEdit(ponto: PontoTuristico): boolean {
     const user = this.authService.currentUser();
     if (!user) return false;
-
     if (user.role === 'ADMIN') return true;
-
     return ponto.criadoPorId === user.id;
   }
 
   excluir(ponto: PontoTuristico) {
-    if (confirm(`Tem a certeza que deseja excluir "${ponto.nome}"? Isso removerá fotos e comentários associados.`)) {
+    if (confirm(`Tem a certeza que deseja excluir "${ponto.nome}"?`)) {
       this.pontoService.excluir(ponto.id).subscribe({
         next: () => {
           this.pontos.update(lista => lista.filter(p => p.id !== ponto.id));

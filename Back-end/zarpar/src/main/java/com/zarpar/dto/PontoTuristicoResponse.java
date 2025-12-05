@@ -1,5 +1,6 @@
 package com.zarpar.dto;
 
+import com.zarpar.domain.Categoria;
 import com.zarpar.domain.PontoTuristico;
 import java.math.BigDecimal;
 
@@ -17,6 +18,7 @@ public class PontoTuristicoResponse {
     private BigDecimal longitude;
     private Long criadoPorId;
     private String criadoPorNome;
+    private Categoria categoria;
 
     public PontoTuristicoResponse(PontoTuristico p) {
         this.id = p.getId();
@@ -33,6 +35,7 @@ public class PontoTuristicoResponse {
             this.criadoPorId = p.getCriadoPor().getId();
             this.criadoPorNome = p.getCriadoPor().getNome();
         }
+        this.categoria = p.getCategoria();
     }
 
     // Apenas Getters são necessários para serialização JSON
@@ -48,4 +51,5 @@ public class PontoTuristicoResponse {
     public BigDecimal getLongitude() { return longitude; }
     public Long getCriadoPorId() { return criadoPorId; }
     public String getCriadoPorNome() { return criadoPorNome; }
+    public Categoria getCategoria() { return categoria; }
 }

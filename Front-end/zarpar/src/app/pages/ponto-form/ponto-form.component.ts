@@ -32,13 +32,28 @@ import { PontoRequest } from '../../core/models/ponto.model';
               </div>
 
               <div class="col-md-6 mb-3">
-                <label class="form-label">Cidade *</label>
-                <input type="text" class="form-control" formControlName="cidade"
-                       [class.is-invalid]="form.get('cidade')?.invalid && form.get('cidade')?.touched">
+                <label class="form-label">Categoria *</label>
+                <select class="form-select" formControlName="categoria"
+                        [class.is-invalid]="form.get('categoria')?.invalid && form.get('categoria')?.touched">
+                  <option value="">Selecione uma opção...</option>
+                  <option value="NATUREZA">Natureza 🌿</option>
+                  <option value="HISTORICO">Histórico 🏛️</option>
+                  <option value="URBANO">Urbano 🏙️</option>
+                  <option value="PRAIA">Praia 🏖️</option>
+                  <option value="AVENTURA">Aventura 🧗</option>
+                  <option value="RELIGIOSO">Religioso ⛪</option>
+                  <option value="OUTRO">Outro 🏳️</option>
+                </select>
+                <div class="invalid-feedback">Selecione uma categoria.</div>
               </div>
             </div>
 
             <div class="row">
+               <div class="col-md-4 mb-3">
+                <label class="form-label">Cidade *</label>
+                <input type="text" class="form-control" formControlName="cidade"
+                       [class.is-invalid]="form.get('cidade')?.invalid && form.get('cidade')?.touched">
+              </div>
                <div class="col-md-4 mb-3">
                 <label class="form-label">Estado</label>
                 <input type="text" class="form-control" formControlName="estado" placeholder="Ex: GO">
@@ -105,6 +120,7 @@ export class PontoFormComponent {
 
   form = this.fb.group({
     nome: ['', Validators.required],
+    categoria: ['', Validators.required],
     cidade: ['', Validators.required],
     estado: [''],
     pais: ['Brasil'],
@@ -139,7 +155,10 @@ export class PontoFormComponent {
   }
 
   onSubmit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     this.isLoading.set(true);
     const dados = this.form.value as PontoRequest;

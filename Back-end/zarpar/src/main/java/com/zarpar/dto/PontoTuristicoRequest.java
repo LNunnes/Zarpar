@@ -1,5 +1,6 @@
 package com.zarpar.dto;
 
+import com.zarpar.domain.Categoria;
 import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 
@@ -22,6 +23,7 @@ public class PontoTuristicoRequest {
 
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private Categoria categoria;
 
     public PontoTuristicoRequest() {}
 
@@ -51,4 +53,12 @@ public class PontoTuristicoRequest {
 
     public BigDecimal getLongitude() { return longitude; }
     public void setLongitude(BigDecimal longitude) { this.longitude = longitude; }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
 }
