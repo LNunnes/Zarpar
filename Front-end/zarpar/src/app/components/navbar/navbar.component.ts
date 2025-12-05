@@ -21,7 +21,12 @@ import { AuthService } from '../../core/services/auth.service';
             <li class="nav-item">
               <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
             </li>
-            </ul>
+            @if (authService.isLoggedIn()) {
+              <li class="nav-item">
+                <a class="nav-link" routerLink="/pontos/novo">Novo Ponto</a>
+              </li>
+            }
+          </ul>
 
           <ul class="navbar-nav ms-auto align-items-center">
 
