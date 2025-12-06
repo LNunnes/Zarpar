@@ -46,6 +46,8 @@ public class PontoTuristico {
     @Column(name = "media_avaliacoes")
     private Double mediaAvaliacoes = 0.0;
 
+    private String capaFilename;
+
     public PontoTuristico() {}
 
     public PontoTuristico(String nome, String descricao, String cidade, String estado, String pais, String endereco, String comoChegar, BigDecimal latitude, BigDecimal longitude, Usuario criadoPor,  Categoria categoria) {
@@ -97,4 +99,7 @@ public class PontoTuristico {
     public void setMediaAvaliacoes(Double mediaAvaliacoes) {
         this.mediaAvaliacoes = mediaAvaliacoes;
     }
+
+    public String getCapaFilename() { return capaFilename; }
+    public void setCapaFilename(String capaFilename) { this.capaFilename = capaFilename; }
 }
