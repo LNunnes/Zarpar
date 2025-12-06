@@ -106,7 +106,9 @@ import { FormsModule } from '@angular/forms';
 
               <div class="card-footer bg-white border-top-0 pb-3 pt-0">
                 <div class="d-flex justify-content-between align-items-center">
-                  <button class="btn btn-sm btn-outline-primary">Ver Detalhes</button>
+                  <a [routerLink]="['/pontos', ponto.id]" class="btn btn-sm btn-outline-primary">
+                    Ver Detalhes
+                  </a>
 
                   @if (canEdit(ponto)) {
                     <div class="btn-group">

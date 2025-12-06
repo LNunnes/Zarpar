@@ -2,6 +2,8 @@ package com.zarpar.dto;
 
 import com.zarpar.domain.Categoria;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 
 public class PontoTuristicoRequest {
@@ -21,8 +23,14 @@ public class PontoTuristicoRequest {
 
     private String comoChegar;
 
+    @DecimalMin(value = "-90", message = "Latitude deve estar entre -90 e +90")
+    @DecimalMax(value = "90", message = "Latitude deve estar entre -90 e +90")
     private BigDecimal latitude;
+    
+    @DecimalMin(value = "-180", message = "Longitude deve estar entre -180 e +180")
+    @DecimalMax(value = "180", message = "Longitude deve estar entre -180 e +180")
     private BigDecimal longitude;
+    
     private Categoria categoria;
 
     public PontoTuristicoRequest() {}

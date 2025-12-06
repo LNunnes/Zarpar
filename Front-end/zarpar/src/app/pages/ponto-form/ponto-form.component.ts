@@ -84,11 +84,19 @@ import { PontoRequest } from '../../core/models/ponto.model';
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label">Latitude</label>
-                <input type="number" step="any" class="form-control" formControlName="latitude">
+                <input type="number" step="any" class="form-control" formControlName="latitude"
+                       [class.is-invalid]="form.get('latitude')?.invalid && form.get('latitude')?.touched"
+                       placeholder="-90 a +90">
+                <div class="invalid-feedback">Deve estar entre -90 e +90</div>
+                <small class="text-muted">Ex: -22.9068 (Cristo Redentor)</small>
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label">Longitude</label>
-                <input type="number" step="any" class="form-control" formControlName="longitude">
+                <input type="number" step="any" class="form-control" formControlName="longitude"
+                       [class.is-invalid]="form.get('longitude')?.invalid && form.get('longitude')?.touched"
+                       placeholder="-180 a +180">
+                <div class="invalid-feedback">Deve estar entre -180 e +180</div>
+                <small class="text-muted">Ex: -43.1729 (Cristo Redentor)</small>
               </div>
             </div>
 
@@ -127,8 +135,8 @@ export class PontoFormComponent {
     descricao: ['', Validators.required],
     comoChegar: [''],
     endereco: [''],
-    latitude: [null as number | null],
-    longitude: [null as number | null]
+    latitude: [null as number | null, [Validators.min(-90), Validators.max(90)]],
+    longitude: [null as number | null, [Validators.min(-180), Validators.max(180)]]
   });
 
   constructor() {
@@ -147,8 +155,12 @@ export class PontoFormComponent {
         this.form.patchValue(ponto);
         this.isLoading.set(false);
       },
-      error: () => {
-        this.errorMessage.set('Erro ao carregar dados do ponto.');
+      error: (err) => {
+        console.error('Erro ao carregar:', err);
+        const mensagem = typeof err.error === 'string' 
+          ? err.error 
+          : err.error?.message || err.message || 'Erro ao carregar dados do ponto.';
+        this.errorMessage.set(mensagem);
         this.isLoading.set(false);
       }
     });
@@ -173,7 +185,12 @@ export class PontoFormComponent {
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.errorMessage.set(err.error || 'Erro ao salvar ponto.');
+        console.error('Erro ao salvar:', err);
+        // Extrai mensagem de erro do backend
+        const mensagem = typeof err.error === 'string' 
+          ? err.error 
+          : err.error?.message || err.message || 'Erro ao salvar ponto.';
+        this.errorMessage.set(mensagem);
       }
     });
   }
