@@ -2,6 +2,7 @@ package com.zarpar.controller;
 
 import com.zarpar.domain.Categoria;
 import com.zarpar.domain.PontoTuristico;
+import com.zarpar.dto.PageDTO;
 import com.zarpar.dto.PontoTuristicoRequest;
 import com.zarpar.dto.PontoTuristicoResponse;
 import com.zarpar.service.PontoTuristicoService;
@@ -27,15 +28,21 @@ public class PontoTuristicoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<PontoTuristicoResponse>> listar(
+    public ResponseEntity<PageDTO<PontoTuristicoResponse>> listar(
             @RequestParam(required = false) String cidade,
             @RequestParam(required = false) Categoria categoria,
             @RequestParam(required = false) Double notaMinima,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<PontoTuristicoResponse> page = service.listar(cidade, categoria, notaMinima, pageable)
-                .map(PontoTuristicoResponse::new);
-        return ResponseEntity.ok(page);
+        PageDTO<PontoTuristico> dto = service.listar(cidade, categoria, notaMinima, pageable);
+
+        PageDTO<PontoTuristicoResponse> responseDTO = new PageDTO<>(
+                dto.getContent().stream().map(PontoTuristicoResponse::new).toList(),
+                dto.getPage(),
+                dto.getSize()
+        );
+
+        return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping("/{id}")
