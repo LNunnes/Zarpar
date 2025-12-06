@@ -4,6 +4,7 @@ import com.zarpar.domain.Categoria;
 import com.zarpar.domain.PontoTuristico;
 import com.zarpar.domain.Role;
 import com.zarpar.domain.Usuario;
+import com.zarpar.dto.PageDTO;
 import com.zarpar.dto.PontoTuristicoRequest;
 import com.zarpar.repository.PontoTuristicoRepository;
 import com.zarpar.repository.UsuarioRepository;
@@ -38,7 +39,7 @@ public class PontoTuristicoService {
     }
 
     @Cacheable(value = "pontos")
-    public Page<PontoTuristico> listar(String cidade, Categoria categoria, Double notaMinima, Pageable pageable) {
+    public PageDTO<PontoTuristico> listar(String cidade, Categoria categoria, Double notaMinima, Pageable pageable) {
         System.out.println("--- Buscando Pontos no Banco de Dados (PostgreSQL) ---");
 
         String termoCidade = null;
@@ -46,7 +47,13 @@ public class PontoTuristicoService {
             termoCidade = "%" + cidade + "%";
         }
 
-        return repository.buscarComFiltros(termoCidade, categoria, notaMinima, pageable);
+        Page<PontoTuristico> page = repository.buscarComFiltros(termoCidade, categoria, notaMinima, pageable);
+
+        return new PageDTO<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize()
+        );
     }
 
     @Transactional
