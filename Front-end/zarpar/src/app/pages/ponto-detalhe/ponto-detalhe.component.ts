@@ -5,8 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { PontoService } from '../../core/services/ponto.service';
 import { AvaliacaoService } from '../../core/services/avaliacao.service';
 import { AuthService } from '../../core/services/auth.service';
+import { HospedagemService } from '../../core/services/hospedagem.service';
 import { PontoTuristico, Avaliacao, Foto } from '../../core/models/ponto.model';
 import { FotoService } from '../../core/services/foto.service';
+import { Hospedagem, HospedagemRequest, TipoHospedagem } from '../../core/models/hospedagem.model';
 
 @Component({
   selector: 'app-ponto-detalhe',
@@ -200,6 +202,157 @@ import { FotoService } from '../../core/services/foto.service';
           <div class="col-lg-4">
              </div>
         </div>
+
+        <!-- Hospedagens Próximas -->
+        <div class="mt-5">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3><i class="bi bi-building"></i> Hospedagens Próximas ({{ hospedagens().length }})</h3>
+            @if (authService.isLoggedIn() && !mostrarFormHospedagem()) {
+              <button class="btn btn-primary" (click)="abrirFormHospedagem()">
+                <i class="bi bi-plus-circle"></i> Adicionar Hospedagem
+              </button>
+            }
+          </div>
+
+          @if (mostrarFormHospedagem()) {
+            <div class="card mb-4 border-primary">
+              <div class="card-header bg-primary text-white">
+                <strong>{{ hospedagemEditando() ? 'Editar Hospedagem' : 'Nova Hospedagem' }}</strong>
+              </div>
+              <div class="card-body">
+                <form #hospedagemForm="ngForm" (ngSubmit)="salvarHospedagem()">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Nome da Hospedagem*</label>
+                      <input type="text" class="form-control" 
+                             [(ngModel)]="formHospedagem.nome" 
+                             name="nome" required #nomeInput="ngModel">
+                      @if (nomeInput.invalid && nomeInput.touched) {
+                        <div class="text-danger small">Nome da hospedagem é obrigatório</div>
+                      }
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Tipo*</label>
+                      <select class="form-select" [(ngModel)]="formHospedagem.tipo" name="tipo" required>
+                        <option value="HOTEL">Hotel</option>
+                        <option value="POUSADA">Pousada</option>
+                        <option value="HOSTEL">Hostel</option>
+                        <option value="RESORT">Resort</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Endereço*</label>
+                    <input type="text" class="form-control" 
+                           [(ngModel)]="formHospedagem.endereco" 
+                           name="endereco" required #enderecoInput="ngModel">
+                    @if (enderecoInput.invalid && enderecoInput.touched) {
+                      <div class="text-danger small">Endereço é obrigatório</div>
+                    }
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Telefone</label>
+                      <input type="text" class="form-control" 
+                             [(ngModel)]="formHospedagem.telefone" 
+                             name="telefone" placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Preço Médio (R$/noite)*</label>
+                      <input type="number" class="form-control" 
+                             [(ngModel)]="formHospedagem.precoMedio" 
+                             name="precoMedio" min="0.01" step="0.01" required #precoInput="ngModel">
+                      @if (precoInput.invalid && precoInput.touched) {
+                        <div class="text-danger small">Preço médio é obrigatório</div>
+                      }
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Link para Reserva*</label>
+                    <input type="url" class="form-control" 
+                           [(ngModel)]="formHospedagem.linkReserva" 
+                           name="linkReserva" 
+                           placeholder="https://exemplo.com.br/reserva"
+                           required
+                           #linkInput="ngModel">
+                    @if (linkInput.invalid && linkInput.touched) {
+                      <div class="text-danger small">Link para reserva é obrigatório</div>
+                    }
+                    <small class="text-muted">Ex: Booking.com, Airbnb, site do hotel, etc.</small>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" [disabled]="hospedagemForm.invalid">
+                      <i class="bi bi-check-circle"></i> {{ hospedagemEditando() ? 'Atualizar' : 'Cadastrar' }}
+                    </button>
+                    <button type="button" class="btn btn-secondary" (click)="cancelarFormHospedagem()">
+                      <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                  </div>
+                  @if (erroHospedagem()) {
+                    <div class="alert alert-danger mt-3">{{ erroHospedagem() }}</div>
+                  }
+                </form>
+              </div>
+            </div>
+          }
+
+          @if (hospedagens().length > 0) {
+            <div class="row">
+              @for (hosp of hospedagens(); track hosp.id) {
+                <div class="col-md-6 mb-3">
+                  <div class="card h-100 border-secondary">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-1">{{ hosp.nome }}</h5>
+                        <span class="badge bg-info text-dark">{{ formatarTipo(hosp.tipo) }}</span>
+                      </div>
+                      
+                      <p class="text-success fw-bold fs-5 mb-2">
+                        R$ {{ hosp.precoMedio.toFixed(2) }}<small class="text-muted fs-6">/noite</small>
+                      </p>
+
+                      <p class="card-text small mb-1">
+                        <i class="bi bi-geo-alt"></i> {{ hosp.endereco }}
+                      </p>
+
+                      @if (hosp.telefone) {
+                        <p class="card-text small mb-2">
+                          <i class="bi bi-telephone"></i> {{ hosp.telefone }}
+                        </p>
+                      }
+
+                      <div class="d-flex gap-2 mt-3">
+                        <a [href]="hosp.linkReserva" target="_blank" class="btn btn-sm btn-outline-primary">
+                          <i class="bi bi-box-arrow-up-right"></i> Reservar
+                        </a>
+
+                        @if (podeEditarHospedagem(hosp)) {
+                          <button class="btn btn-sm btn-outline-warning" (click)="editarHospedagem(hosp)">
+                            <i class="bi bi-pencil"></i> Editar
+                          </button>
+                          <button class="btn btn-sm btn-outline-danger" (click)="removerHospedagem(hosp)">
+                            <i class="bi bi-trash"></i> Remover
+                          </button>
+                        }
+                      </div>
+
+                      <small class="text-muted d-block mt-2">
+                        Adicionado por: {{ hosp.criadoPorNome }}
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else if (!mostrarFormHospedagem()) {
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle"></i>
+              Nenhuma hospedagem cadastrada ainda. 
+              @if (authService.isLoggedIn()) { Seja o primeiro a adicionar! }
+            </div>
+          }
+        </div>
+
       </div>
     }
   `
@@ -210,11 +363,13 @@ export class PontoDetalheComponent implements OnInit {
   private pontoService = inject(PontoService);
   private avaliacaoService = inject(AvaliacaoService);
   private fotoService = inject(FotoService);
+  private hospedagemService = inject(HospedagemService);
   public authService = inject(AuthService);
 
   ponto = signal<PontoTuristico | null>(null);
   avaliacoes = signal<Avaliacao[]>([]);
   fotos = signal<Foto[]>([]);
+  hospedagens = signal<Hospedagem[]>([]);
 
   minhaNota = signal(0);
   meuComentario = signal('');
@@ -228,6 +383,19 @@ export class PontoDetalheComponent implements OnInit {
   isUploading = signal(false);
   uploadError = signal('');
 
+  // Hospedagens
+  mostrarFormHospedagem = signal(false);
+  hospedagemEditando = signal<Hospedagem | null>(null);
+  erroHospedagem = signal('');
+  formHospedagem: HospedagemRequest = {
+    nome: '',
+    endereco: '',
+    telefone: '',
+    precoMedio: 0,
+    tipo: 'HOTEL',
+    linkReserva: ''
+  };
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -239,6 +407,18 @@ export class PontoDetalheComponent implements OnInit {
     this.pontoService.buscarPorId(id).subscribe(p => this.ponto.set(p));
     this.carregarAvaliacoes(id);
     this.carregarFotos(id);
+    this.carregarHospedagens(id);
+  }
+
+  carregarHospedagens(pontoId: number) {
+    this.hospedagemService.listarPorPonto(pontoId).subscribe({
+      next: (hospedagens) => {
+        this.hospedagens.set(hospedagens);
+      },
+      error: (err) => {
+        console.error('Erro ao carregar hospedagens:', err);
+      }
+    });
   }
 
   carregarAvaliacoes(id: number) {
@@ -353,6 +533,117 @@ export class PontoDetalheComponent implements OnInit {
         if (this.ponto()) this.carregarDados(this.ponto()!.id);
       });
     }
+  }
+
+  // ===== Métodos de Hospedagem =====
+
+  abrirFormHospedagem() {
+    this.mostrarFormHospedagem.set(true);
+    this.hospedagemEditando.set(null);
+    this.erroHospedagem.set('');
+    this.formHospedagem = {
+      nome: '',
+      endereco: '',
+      telefone: '',
+      precoMedio: 0,
+      tipo: 'HOTEL',
+      linkReserva: ''
+    };
+  }
+
+  cancelarFormHospedagem() {
+    this.mostrarFormHospedagem.set(false);
+    this.hospedagemEditando.set(null);
+    this.erroHospedagem.set('');
+  }
+
+  salvarHospedagem() {
+    const pontoAtual = this.ponto();
+    if (!pontoAtual) return;
+
+    this.erroHospedagem.set('');
+
+    const hospedagemEmEdicao = this.hospedagemEditando();
+    
+    if (hospedagemEmEdicao) {
+      // Atualizar hospedagem existente
+      this.hospedagemService.atualizar(pontoAtual.id, hospedagemEmEdicao.id, this.formHospedagem).subscribe({
+        next: () => {
+          this.carregarHospedagens(pontoAtual.id);
+          this.cancelarFormHospedagem();
+          alert('Hospedagem atualizada com sucesso!');
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar hospedagem:', err);
+          const mensagemErro = err.error?.message || err.error || 'Erro ao atualizar hospedagem';
+          this.erroHospedagem.set(mensagemErro);
+        }
+      });
+    } else {
+      // Criar nova hospedagem
+      this.hospedagemService.criar(pontoAtual.id, this.formHospedagem).subscribe({
+        next: () => {
+          this.carregarHospedagens(pontoAtual.id);
+          this.cancelarFormHospedagem();
+          alert('Hospedagem cadastrada com sucesso!');
+        },
+        error: (err) => {
+          console.error('Erro ao criar hospedagem:', err);
+          const mensagemErro = err.error?.message || err.error || 'Erro ao cadastrar hospedagem';
+          this.erroHospedagem.set(mensagemErro);
+        }
+      });
+    }
+  }
+
+  editarHospedagem(hosp: Hospedagem) {
+    this.hospedagemEditando.set(hosp);
+    this.mostrarFormHospedagem.set(true);
+    this.erroHospedagem.set('');
+    this.formHospedagem = {
+      nome: hosp.nome,
+      endereco: hosp.endereco,
+      telefone: hosp.telefone || '',
+      precoMedio: hosp.precoMedio,
+      tipo: hosp.tipo,
+      linkReserva: hosp.linkReserva || ''
+    };
+  }
+
+  removerHospedagem(hosp: Hospedagem) {
+    const pontoAtual = this.ponto();
+    if (!pontoAtual) return;
+
+    if (confirm(`Tem certeza que deseja remover a hospedagem "${hosp.nome}"?`)) {
+      this.hospedagemService.excluir(pontoAtual.id, hosp.id).subscribe({
+        next: () => {
+          this.carregarHospedagens(pontoAtual.id);
+          alert('Hospedagem removida com sucesso!');
+        },
+        error: (err) => {
+          console.error('Erro ao remover hospedagem:', err);
+          const mensagemErro = err.error?.message || err.error || 'Erro ao remover hospedagem';
+          alert(mensagemErro);
+        }
+      });
+    }
+  }
+
+  podeEditarHospedagem(hosp: Hospedagem): boolean {
+    const user = this.authService.currentUser();
+    if (!user) return false;
+    if (user.role === 'ADMIN') return true;
+    return hosp.criadoPorId === user.id;
+  }
+
+  formatarTipo(tipo: TipoHospedagem): string {
+    const tipos: Record<TipoHospedagem, string> = {
+      'HOTEL': 'Hotel',
+      'POUSADA': 'Pousada',
+      'HOSTEL': 'Hostel',
+      'RESORT': 'Resort'
+    };
+    return tipos[tipo] || tipo;
   }
 
   getHeroBackgroundUrl(p: PontoTuristico): string {
