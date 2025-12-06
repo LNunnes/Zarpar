@@ -43,6 +43,9 @@ public class PontoTuristico {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "media_avaliacoes")
+    private Double mediaAvaliacoes = 0.0;
+
     public PontoTuristico() {}
 
     public PontoTuristico(String nome, String descricao, String cidade, String estado, String pais, String endereco, String comoChegar, BigDecimal latitude, BigDecimal longitude, Usuario criadoPor,  Categoria categoria) {
@@ -58,6 +61,7 @@ public class PontoTuristico {
         this.criadoPor = criadoPor;
         this.createdAt = LocalDateTime.now();
         this.categoria = categoria;
+        this.mediaAvaliacoes = 0.0;
     }
 
     public Long getId() { return id; }
@@ -85,4 +89,12 @@ public class PontoTuristico {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public Categoria getCategoria() { return categoria; }
     public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+
+    public Double getMediaAvaliacoes() {
+        return mediaAvaliacoes;
+    }
+
+    public void setMediaAvaliacoes(Double mediaAvaliacoes) {
+        this.mediaAvaliacoes = mediaAvaliacoes;
+    }
 }

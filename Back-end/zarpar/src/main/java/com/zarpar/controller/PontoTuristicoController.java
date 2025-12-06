@@ -30,9 +30,10 @@ public class PontoTuristicoController {
     public ResponseEntity<Page<PontoTuristicoResponse>> listar(
             @RequestParam(required = false) String cidade,
             @RequestParam(required = false) Categoria categoria,
+            @RequestParam(required = false) Double notaMinima,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<PontoTuristicoResponse> page = service.listar(cidade, categoria, pageable)
+        Page<PontoTuristicoResponse> page = service.listar(cidade, categoria, notaMinima, pageable)
                 .map(PontoTuristicoResponse::new);
         return ResponseEntity.ok(page);
     }
