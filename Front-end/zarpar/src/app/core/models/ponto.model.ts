@@ -14,6 +14,7 @@ export interface PontoTuristico {
 
   criadoPorId: number;
   criadoPorNome: string;
+  mediaAvaliacoes?: number;
 }
 
 export interface PontoRequest {
@@ -36,4 +37,19 @@ export interface Page<T> {
   totalElements: number;
   size: number;
   number: number;
+}
+
+export interface Avaliacao {
+  id: string;
+  pontoId: number;
+  usuarioId: number;
+  nomeUsuario: string;
+  nota: number;
+  comentario: string;
+  data: string;
+}
+
+export interface AvaliacaoRequest {
+  nota: number;
+  comentario: string;
 }

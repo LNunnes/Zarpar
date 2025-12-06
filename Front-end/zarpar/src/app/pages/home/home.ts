@@ -48,6 +48,14 @@ import { FormsModule } from '@angular/forms';
               <option value="OUTRO">Outro</option>
             </select>
           </div>
+          <div class="col-md-3">
+            <select class="form-select" [(ngModel)]="filtroNota" (change)="aplicarFiltros()">
+              <option value="">Qualquer Avaliação</option>
+              <option value="3">3+ Estrelas</option>
+              <option value="4">4+ Estrelas</option>
+              <option value="5">5 Estrelas</option>
+            </select>
+          </div>
           <div class="col-md-2 d-grid">
             <button class="btn btn-primary" (click)="aplicarFiltros()">Filtrar</button>
           </div>
@@ -106,7 +114,7 @@ import { FormsModule } from '@angular/forms';
 
               <div class="card-footer bg-white border-top-0 pb-3 pt-0">
                 <div class="d-flex justify-content-between align-items-center">
-                  <button class="btn btn-sm btn-outline-primary">Ver Detalhes</button>
+                  <a [routerLink]="['/pontos', ponto.id]" class="btn btn-sm btn-outline-primary">Ver Detalhes</a>
 
                   @if (canEdit(ponto)) {
                     <div class="btn-group">
@@ -173,6 +181,7 @@ export class HomeComponent implements OnInit {
     const filtros = {
       cidade: this.filtroCidade() || undefined,
       categoria: this.filtroCategoria() || undefined,
+      notaMinima: this.filtroNota() ? Number(this.filtroNota()) : undefined
     };
 
     this.pontoService.listar(page, 10, filtros).subscribe({
