@@ -7,6 +7,8 @@ import com.zarpar.domain.Usuario;
 import com.zarpar.dto.PontoTuristicoRequest;
 import com.zarpar.repository.PontoTuristicoRepository;
 import com.zarpar.repository.UsuarioRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,12 +22,24 @@ public class PontoTuristicoService {
     private final PontoTuristicoRepository repository;
     private final UsuarioRepository usuarioRepository;
 
-    public PontoTuristicoService(PontoTuristicoRepository repository, UsuarioRepository usuarioRepository) {
+    private final AvaliacaoService avaliacaoService;
+    private final FotoService fotoService;
+
+    public PontoTuristicoService(
+            PontoTuristicoRepository repository,
+            UsuarioRepository usuarioRepository,
+            AvaliacaoService avaliacaoService,
+            FotoService fotoService
+    ) {
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
+        this.avaliacaoService = avaliacaoService;
+        this.fotoService = fotoService;
     }
 
+    @Cacheable(value = "pontos")
     public Page<PontoTuristico> listar(String cidade, Categoria categoria, Double notaMinima, Pageable pageable) {
+        System.out.println("--- Buscando Pontos no Banco de Dados (PostgreSQL) ---");
 
         String termoCidade = null;
         if (cidade != null && !cidade.isBlank()) {
@@ -35,6 +49,8 @@ public class PontoTuristicoService {
         return repository.buscarComFiltros(termoCidade, categoria, notaMinima, pageable);
     }
 
+    @Transactional
+    @CacheEvict(value = "pontos", allEntries = true)
     public PontoTuristico buscarPorId(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ponto turístico não encontrado"));
@@ -59,6 +75,7 @@ public class PontoTuristicoService {
     }
 
     @Transactional
+    @CacheEvict(value = "pontos", allEntries = true)
     public PontoTuristico atualizar(Long id, PontoTuristicoRequest req, Long usuarioId) {
         PontoTuristico p = buscarPorId(id);
         Usuario usuario = usuarioRepository.findById(usuarioId)
@@ -83,6 +100,7 @@ public class PontoTuristicoService {
     }
 
     @Transactional
+    @CacheEvict(value = "pontos", allEntries = true)
     public void excluir(Long id, Long usuarioId) {
         PontoTuristico p = buscarPorId(id);
         Usuario usuario = usuarioRepository.findById(usuarioId)
@@ -92,7 +110,10 @@ public class PontoTuristicoService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para excluir este ponto.");
         }
 
-        // TODO: Aqui futuramente excluiremos fotos (Disco) e comentários (MongoDB)
+        fotoService.deletarTodasDoPonto(id);
+
+        avaliacaoService.deletarTodasDoPonto(id);
+
         repository.delete(p);
     }
 }
