@@ -3,7 +3,6 @@ import { LoginComponent } from './pages/login/login';
 import { RegisterComponent } from './pages/register/register';
 import { HomeComponent } from './pages/home/home';
 import { PontoFormComponent } from './pages/ponto-form/ponto-form.component';
-import { PontoDetailComponent } from './pages/ponto-detail/ponto-detail.component';
 import { authGuard } from './core/guards/auth.guard';
 import { PontoDetalheComponent } from './pages/ponto-detalhe/ponto-detalhe.component';
 
