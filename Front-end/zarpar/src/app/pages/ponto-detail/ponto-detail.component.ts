@@ -20,7 +20,7 @@ import { PontoTuristico } from '../../core/models/ponto.model';
             {{ ponto()!.cidade }}, {{ ponto()!.estado }} - {{ ponto()!.pais }}
           </p>
         </div>
-        
+
         <div class="btn-group" *ngIf="canEdit()">
           <a [routerLink]="['/pontos/editar', ponto()!.id]" class="btn btn-outline-primary">
             <i class="bi bi-pencil"></i> Editar Ponto
@@ -36,7 +36,7 @@ import { PontoTuristico } from '../../core/models/ponto.model';
         <div class="card-body">
           <h2 class="h4 mb-3"><i class="bi bi-info-circle"></i> Sobre este local</h2>
           <p class="lead">{{ ponto()!.descricao }}</p>
-          
+
           <div class="row mt-4">
             <div class="col-md-6">
               <p class="mb-2"><strong>Endereço:</strong></p>
@@ -50,17 +50,16 @@ import { PontoTuristico } from '../../core/models/ponto.model';
         </div>
       </section>
 
-      <!-- Como Chegar -->
       <section class="card mb-4 shadow-sm">
         <div class="card-body">
           <h2 class="h4 mb-3"><i class="bi bi-map"></i> Como Chegar</h2>
-          
+
           <div class="row">
             <div class="col-md-6 mb-3">
               <p class="mb-2"><strong>Coordenadas GPS:</strong></p>
               <div class="p-3 bg-light rounded" *ngIf="ponto()!.latitude && ponto()!.longitude">
                 <p class="mb-1 font-monospace">
-                  <i class="bi bi-geo"></i> 
+                  <i class="bi bi-geo"></i>
                   {{ ponto()!.latitude }}, {{ ponto()!.longitude }}
                 </p>
                 <button class="btn btn-sm btn-outline-primary mt-2" (click)="copiarCoordenadas()">
@@ -85,7 +84,6 @@ import { PontoTuristico } from '../../core/models/ponto.model';
         </div>
       </section>
 
-      <!-- Galeria de Fotos (Placeholder) -->
       <section class="card mb-4 shadow-sm">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -94,7 +92,7 @@ import { PontoTuristico } from '../../core/models/ponto.model';
               <i class="bi bi-camera"></i> Adicionar Foto
             </button>
           </div>
-          
+
           <div class="alert alert-info">
             <i class="bi bi-info-circle"></i>
             Nenhuma foto ainda. Seja o primeiro a adicionar!
@@ -112,7 +110,7 @@ import { PontoTuristico } from '../../core/models/ponto.model';
               <span class="text-muted fs-6">(0 avaliações)</span>
             </h2>
           </div>
-          
+
           <div class="alert alert-info">
             <i class="bi bi-info-circle"></i>
             Nenhuma avaliação ainda. Seja o primeiro a avaliar!
@@ -137,7 +135,7 @@ import { PontoTuristico } from '../../core/models/ponto.model';
               <i class="bi bi-plus-circle"></i> Adicionar Hospedagem
             </button>
           </div>
-          
+
           <div class="alert alert-info">
             <i class="bi bi-info-circle"></i>
             Nenhuma hospedagem cadastrada ainda.

@@ -10,4 +10,6 @@ public interface AvaliacaoRepository extends MongoRepository<Avaliacao, String> 
     List<Avaliacao> findByPontoIdOrderByDataDesc(Long pontoId);
 
     Optional<Avaliacao> findByPontoIdAndUsuarioId(Long pontoId, Long usuarioId);
+
+    void deleteByPontoId(Long pontoId);
 }

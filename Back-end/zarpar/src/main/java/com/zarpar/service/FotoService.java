@@ -136,4 +136,19 @@ public class FotoService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Arquivo não encontrado");
         }
     }
+
+    public void deletarTodasDoPonto(Long pontoId) {
+        List<Foto> fotos = fotoRepository.findByPontoIdOrderByDataDesc(pontoId);
+
+        for (Foto foto : fotos) {
+            try {
+                Path filePath = this.fileStorageLocation.resolve(foto.getFilename());
+                Files.deleteIfExists(filePath);
+            } catch (IOException ex) {
+                System.err.println("Erro ao apagar arquivo físico: " + foto.getFilename());
+            }
+        }
+
+        fotoRepository.deleteAll(fotos);
+    }
 }

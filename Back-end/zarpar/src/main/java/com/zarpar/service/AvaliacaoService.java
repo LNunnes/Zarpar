@@ -8,6 +8,7 @@ import com.zarpar.dto.AvaliacaoRequest;
 import com.zarpar.repository.AvaliacaoRepository;
 import com.zarpar.repository.PontoTuristicoRepository;
 import com.zarpar.repository.UsuarioRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,7 @@ public class AvaliacaoService {
     }
 
     @Transactional
+    @CacheEvict(value = "pontos", allEntries = true)
     public Avaliacao salvar(Long pontoId, Long usuarioId, AvaliacaoRequest req) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
@@ -66,6 +68,7 @@ public class AvaliacaoService {
     }
 
     @Transactional
+    @CacheEvict(value = "pontos", allEntries = true)
     public void excluir(String id, Long usuarioId) {
         Avaliacao av = avaliacaoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -99,5 +102,9 @@ public class AvaliacaoService {
         }
 
         pontoRepository.save(ponto);
+    }
+
+    public void deletarTodasDoPonto(Long pontoId) {
+        avaliacaoRepository.deleteByPontoId(pontoId);
     }
 }
