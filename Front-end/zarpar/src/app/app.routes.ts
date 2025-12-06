@@ -5,6 +5,7 @@ import { HomeComponent } from './pages/home/home';
 import { PontoFormComponent } from './pages/ponto-form/ponto-form.component';
 import { PontoDetailComponent } from './pages/ponto-detail/ponto-detail.component';
 import { authGuard } from './core/guards/auth.guard';
+import { PontoDetalheComponent } from './pages/ponto-detalhe/ponto-detalhe.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -23,10 +24,7 @@ export const routes: Routes = [
       canActivate: [authGuard]
     },
 
-    {
-      path: 'pontos/:id',
-      component: PontoDetailComponent
-    },
+    { path: 'pontos/:id', component: PontoDetalheComponent },
 
     { path: '**', redirectTo: '' }
 ];
