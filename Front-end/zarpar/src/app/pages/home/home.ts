@@ -86,9 +86,16 @@ import { FormsModule } from '@angular/forms';
           <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm border-0">
 
-              <div class="bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 200px;">
-                <span class="text-muted fs-1">📷</span>
-              </div>
+              @if (ponto.capaFilename) {
+                <img [src]="'http://localhost:8080/api/fotos/arquivo/' + ponto.capaFilename"
+                    class="card-img-top"
+                    style="height: 200px; object-fit: cover;"
+                    alt="{{ ponto.nome }}">
+              } @else {
+                <div class="bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 200px;">
+                  <span class="text-muted fs-1">📷</span>
+                </div>
+              }
 
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">

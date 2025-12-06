@@ -15,6 +15,7 @@ export interface PontoTuristico {
   criadoPorId: number;
   criadoPorNome: string;
   mediaAvaliacoes?: number;
+  capaFilename?: string;
 }
 
 export interface PontoRequest {
@@ -52,4 +53,14 @@ export interface Avaliacao {
 export interface AvaliacaoRequest {
   nota: number;
   comentario: string;
+}
+
+export interface Foto {
+  id: string;
+  pontoId: number;
+  usuarioId: number;
+  nomeUsuario: string;
+  filename: string;
+  titulo?: string;
+  descricao?: string;
 }
