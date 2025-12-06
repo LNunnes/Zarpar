@@ -19,6 +19,7 @@ public class PontoTuristicoResponse {
     private Long criadoPorId;
     private String criadoPorNome;
     private Categoria categoria;
+    private Double mediaAvaliacoes;
 
     public PontoTuristicoResponse(PontoTuristico p) {
         this.id = p.getId();
@@ -36,6 +37,7 @@ public class PontoTuristicoResponse {
             this.criadoPorNome = p.getCriadoPor().getNome();
         }
         this.categoria = p.getCategoria();
+        this.mediaAvaliacoes = p.getMediaAvaliacoes();
     }
 
     // Apenas Getters são necessários para serialização JSON
@@ -52,4 +54,5 @@ public class PontoTuristicoResponse {
     public Long getCriadoPorId() { return criadoPorId; }
     public String getCriadoPorNome() { return criadoPorNome; }
     public Categoria getCategoria() { return categoria; }
+    public Double getMediaAvaliacoes() { return mediaAvaliacoes; }
 }

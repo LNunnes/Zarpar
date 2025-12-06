@@ -4,6 +4,7 @@ import { RegisterComponent } from './pages/register/register';
 import { HomeComponent } from './pages/home/home';
 import { PontoFormComponent } from './pages/ponto-form/ponto-form.component';
 import { authGuard } from './core/guards/auth.guard';
+import { PontoDetalheComponent } from './pages/ponto-detalhe/ponto-detalhe.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -21,6 +22,8 @@ export const routes: Routes = [
       component: PontoFormComponent,
       canActivate: [authGuard]
     },
+
+    { path: 'pontos/:id', component: PontoDetalheComponent },
 
     { path: '**', redirectTo: '' }
 ];

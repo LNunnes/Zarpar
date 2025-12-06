@@ -25,15 +25,14 @@ public class PontoTuristicoService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public Page<PontoTuristico> listar(String cidade, Categoria categoria, Pageable pageable) {
+    public Page<PontoTuristico> listar(String cidade, Categoria categoria, Double notaMinima, Pageable pageable) {
 
         String termoCidade = null;
-
         if (cidade != null && !cidade.isBlank()) {
             termoCidade = "%" + cidade + "%";
         }
 
-        return repository.buscarComFiltros(termoCidade, categoria, pageable);
+        return repository.buscarComFiltros(termoCidade, categoria, notaMinima, pageable);
     }
 
     public PontoTuristico buscarPorId(Long id) {
