@@ -2,6 +2,7 @@ package com.zarpar.service;
 
 import com.zarpar.domain.Hospedagem;
 import com.zarpar.domain.PontoTuristico;
+import com.zarpar.domain.Role;
 import com.zarpar.domain.Usuario;
 import com.zarpar.dto.HospedagemRequest;
 import com.zarpar.repository.HospedagemRepository;
@@ -55,7 +56,7 @@ public class HospedagemService {
         Hospedagem hospedagem = buscarPorId(id);
 
         // Verificar permissão
-        if (!usuario.getRole().equals("ADMIN") && !hospedagem.getCriadoPor().getId().equals(usuario.getId())) {
+        if (usuario.getRole() != Role.ADMIN && !hospedagem.getCriadoPor().getId().equals(usuario.getId())) {
             throw new SecurityException("Você não tem permissão para editar esta hospedagem");
         }
 
@@ -74,7 +75,7 @@ public class HospedagemService {
         Hospedagem hospedagem = buscarPorId(id);
 
         // Verificar permissão
-        if (!usuario.getRole().equals("ADMIN") && !hospedagem.getCriadoPor().getId().equals(usuario.getId())) {
+        if (usuario.getRole() != Role.ADMIN && !hospedagem.getCriadoPor().getId().equals(usuario.getId())) {
             throw new SecurityException("Você não tem permissão para remover esta hospedagem");
         }
 

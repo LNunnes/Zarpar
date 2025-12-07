@@ -25,17 +25,20 @@ public class PontoTuristicoService {
 
     private final AvaliacaoService avaliacaoService;
     private final FotoService fotoService;
+    private final com.zarpar.repository.HospedagemRepository hospedagemRepository;
 
     public PontoTuristicoService(
             PontoTuristicoRepository repository,
             UsuarioRepository usuarioRepository,
             AvaliacaoService avaliacaoService,
-            FotoService fotoService
+            FotoService fotoService,
+            com.zarpar.repository.HospedagemRepository hospedagemRepository
     ) {
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
         this.avaliacaoService = avaliacaoService;
         this.fotoService = fotoService;
+        this.hospedagemRepository = hospedagemRepository;
     }
 
     @Cacheable(value = "pontos")
@@ -64,6 +67,7 @@ public class PontoTuristicoService {
     }
 
     @Transactional
+    @CacheEvict(value = "pontos", allEntries = true)
     public PontoTuristico criar(PontoTuristicoRequest req, Long usuarioId) {
         if (repository.existsByNomeIgnoreCaseAndCidadeIgnoreCase(req.getNome(), req.getCidade())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um ponto turístico com este nome nesta cidade.");
@@ -117,10 +121,16 @@ public class PontoTuristicoService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para excluir este ponto.");
         }
 
+        // Excluir hospedagens associadas
+        hospedagemRepository.deleteByPontoId(id);
+        
+        // Excluir fotos
         fotoService.deletarTodasDoPonto(id);
 
+        // Excluir avaliações
         avaliacaoService.deletarTodasDoPonto(id);
 
+        // Excluir ponto
         repository.delete(p);
     }
 }

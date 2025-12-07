@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Importante para diretivas básicas
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ExportService } from '../../core/services/export.service';
 
 @Component({
   selector: 'app-navbar',
@@ -24,6 +25,18 @@ import { AuthService } from '../../core/services/auth.service';
             @if (authService.isLoggedIn()) {
               <li class="nav-item">
                 <a class="nav-link" routerLink="/pontos/novo">Novo Ponto</a>
+              </li>
+            }
+            @if (authService.isAdmin()) {
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-download"></i> Exportar Dados
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" (click)="exportarTodos('json')"><i class="bi bi-filetype-json"></i> JSON</a></li>
+                  <li><a class="dropdown-item" (click)="exportarTodos('csv')"><i class="bi bi-filetype-csv"></i> CSV</a></li>
+                  <li><a class="dropdown-item" (click)="exportarTodos('xml')"><i class="bi bi-filetype-xml"></i> XML</a></li>
+                </ul>
               </li>
             }
           </ul>
@@ -63,8 +76,13 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class NavbarComponent {
   public authService = inject(AuthService);
+  private exportService = inject(ExportService);
 
   logout() {
     this.authService.logout().subscribe();
+  }
+
+  exportarTodos(formato: 'json' | 'csv' | 'xml') {
+    this.exportService.exportarTodos(formato);
   }
 }

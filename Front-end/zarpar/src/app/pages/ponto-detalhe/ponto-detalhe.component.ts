@@ -6,6 +6,7 @@ import { PontoService } from '../../core/services/ponto.service';
 import { AvaliacaoService } from '../../core/services/avaliacao.service';
 import { AuthService } from '../../core/services/auth.service';
 import { HospedagemService } from '../../core/services/hospedagem.service';
+import { ExportService } from '../../core/services/export.service';
 import { PontoTuristico, Avaliacao, Foto } from '../../core/models/ponto.model';
 import { FotoService } from '../../core/services/foto.service';
 import { Hospedagem, HospedagemRequest, TipoHospedagem } from '../../core/models/hospedagem.model';
@@ -21,7 +22,23 @@ import { Hospedagem, HospedagemRequest, TipoHospedagem } from '../../core/models
         style="background-size: cover; background-position: center; transition: background 0.3s ease-in-out;"
       >
         <div class="container">
-          <span class="badge bg-warning text-dark mb-2">{{ p.categoria }}</span>
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <span class="badge bg-warning text-dark mb-2">{{ p.categoria }}</span>
+            </div>
+            @if (authService.isAdmin()) {
+              <div class="dropdown">
+                <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-download"></i> Exportar Ponto
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" (click)="exportarPonto('json')"><i class="bi bi-filetype-json"></i> JSON</a></li>
+                  <li><a class="dropdown-item" (click)="exportarPonto('csv')"><i class="bi bi-filetype-csv"></i> CSV</a></li>
+                  <li><a class="dropdown-item" (click)="exportarPonto('xml')"><i class="bi bi-filetype-xml"></i> XML</a></li>
+                </ul>
+              </div>
+            }
+          </div>
           <h1 class="display-3 fw-bold">{{ p.nome }}</h1>
           <p class="lead"><i class="bi bi-geo-alt"></i> {{ p.cidade }} - {{ p.estado }}</p>
 
@@ -364,6 +381,7 @@ export class PontoDetalheComponent implements OnInit {
   private avaliacaoService = inject(AvaliacaoService);
   private fotoService = inject(FotoService);
   private hospedagemService = inject(HospedagemService);
+  private exportService = inject(ExportService);
   public authService = inject(AuthService);
 
   ponto = signal<PontoTuristico | null>(null);
@@ -644,6 +662,12 @@ export class PontoDetalheComponent implements OnInit {
       'RESORT': 'Resort'
     };
     return tipos[tipo] || tipo;
+  }
+
+  exportarPonto(formato: 'json' | 'csv' | 'xml') {
+    const pontoAtual = this.ponto();
+    if (!pontoAtual) return;
+    this.exportService.exportarPonto(pontoAtual.id, formato);
   }
 
   getHeroBackgroundUrl(p: PontoTuristico): string {
