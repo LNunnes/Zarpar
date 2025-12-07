@@ -20,21 +20,22 @@ export class PontoService {
     if (filtros?.categoria) params = params.set('categoria', filtros.categoria);
     if (filtros?.notaMinima) params = params.set('notaMinima', filtros.notaMinima.toString());
 
-    return this.http.get<Page<PontoTuristico>>(this.apiUrl, { params });
+    return this.http.get<Page<PontoTuristico>>(this.apiUrl, { params, withCredentials: true });
   }
+
   buscarPorId(id: number): Observable<PontoTuristico> {
-    return this.http.get<PontoTuristico>(`${this.apiUrl}/${id}`);
+    return this.http.get<PontoTuristico>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 
   criar(dados: PontoRequest): Observable<PontoTuristico> {
-    return this.http.post<PontoTuristico>(this.apiUrl, dados);
+    return this.http.post<PontoTuristico>(this.apiUrl, dados, { withCredentials: true });
   }
 
   atualizar(id: number, dados: PontoRequest): Observable<PontoTuristico> {
-    return this.http.put<PontoTuristico>(`${this.apiUrl}/${id}`, dados);
+    return this.http.put<PontoTuristico>(`${this.apiUrl}/${id}`, dados, { withCredentials: true });
   }
 
   excluir(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 }
