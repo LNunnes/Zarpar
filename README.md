@@ -40,15 +40,14 @@ Este projeto foi configurado para rodar **localmente** (sem Docker). Certifique-
 
 ### **1\. Java & Ferramentas**
 
-- **Java JDK:** Versão 21
-- **Maven:** Para gerenciar dependências do Backend.
-- **IDE:** IntelliJ IDEA (Recomendado) ou Eclipse/VS Code.
+- **Java JDK:** Versão 21 ou superior
+- **Maven:** Incluído no projeto (wrapper `./mvnw`)
+- **IDE:** IntelliJ IDEA, Eclipse ou VS Code
 
 ### **2\. Node.js & Angular**
 
 - **Node.js:** Versão LTS (v18 ou v20).
-- Angular CLI: Instale via terminal com o comando:  
-    npm install -g @angular/cli
+- **Angular CLI:** Versão 19+ (`npm install -g @angular/cli`)
 
 ### **3\. Banco de Dados (Instalação Obrigatória)**
 
@@ -64,50 +63,71 @@ Este projeto foi configurado para rodar **localmente** (sem Docker). Certifique-
 
 ## **Como Rodar a Aplicação**
 
-### **Passo 1: Configurar o Backend**
+### **Passo 1: Criar Banco de Dados**
 
-- Clone este repositório.
-- Navegue até a pasta do backend.
-- Abra o arquivo src/main/resources/application.properties.
+```sql
+-- No PostgreSQL, criar o banco:
+CREATE DATABASE zarpar;
+```
 
-**Configure suas credenciais do PostgreSQL**:  
-**Properties**  
+### **Passo 2: Configurar o Backend**
+
+Edite `Back-end/zarpar/src/main/resources/application.properties`:
+
+```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/zarpar
-
 spring.datasource.username=postgres
-
 spring.datasource.password=SUA_SENHA_AQUI
-
-\# O Hibernate cria as tabelas automaticamente
-
 spring.jpa.hibernate.ddl-auto=update
 
-### **Passo 2: Iniciar o Backend**
+spring.data.mongodb.uri=mongodb://localhost:27017/zarpar_docs
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+```
 
-No terminal (na pasta do projeto Java), execute:
+### **Passo 3: Instalar Dependências e Iniciar Backend**
 
-mvn spring-boot:run
+```bash
+cd Back-end/zarpar
+./mvnw clean install
+./mvnw spring-boot:run
+```
+**Backend:** http://localhost:8080
 
-- O servidor iniciará em: <http://localhost:8080>
-- Uma pasta uploads será criada automaticamente na raiz do projeto.
+### **Passo 4: Instalar Dependências e Iniciar Frontend**
 
-### **Passo 3: Iniciar o Frontend**
+```bash
+cd Front-end/zarpar
+npm install
+ng serve --port 4200
+```
+**Frontend:** http://localhost:4200
 
-- Abra um novo terminal.
-- Navegue até a pasta do frontend.
-- Instale as dependências:  
-    npm install
-- Rode o servidor de desenvolvimento:  
-    ng serve
-- Acesse no navegador: <http://localhost:4200>
+### **Passo 5: Criar Usuário Administrador**
+
+Após criar uma conta pelo sistema, altere a role no banco:
+
+```sql
+-- Conectar ao PostgreSQL
+psql -U postgres -d zarpar
+
+-- Alterar usuário para ADMIN
+UPDATE usuarios SET role = 'ADMIN' WHERE email = 'seu-email@exemplo.com';
+```
+
+**OU** use o usuário padrão já existente:
+- Email: `nuninhos@zarpar.local`
+- Senha: `dados1`
+
+## **Requisitos Funcionais Implementados**
 
 ## **Testando o Cache (Redis)**
 
 Para verificar se o Redis está funcionando:
 
-- Abra o **redis-cli** no seu terminal (CMD ou PowerShell).
+- Abra o **redis-cli** no seu terminal.
 - Acesse a Home Page do sistema no navegador (<http://localhost:4200>).
-- No terminal do Redis, digite: KEYS \*
-- Se vir algo como "pontos::SimpleKey \[\]", o cache foi salvo com sucesso!
+- No terminal do Redis, digite: `KEYS *`
+- Se vir algo como `"pontos::SimpleKey []"`, o cache foi salvo com sucesso!
 - Na próxima atualização da página (F5), o Backend não fará consulta ao SQL, retornando o dado do Redis instantaneamente.
-  - _Para limpar o cache manualmente, use o comando: FLUSHALL_
+  - _Para limpar o cache manualmente, use: `FLUSHALL`_
