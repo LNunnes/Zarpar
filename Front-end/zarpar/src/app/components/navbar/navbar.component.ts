@@ -38,6 +38,11 @@ import { ExportService } from '../../core/services/export.service';
                   <li><a class="dropdown-item" (click)="exportarTodos('xml')"><i class="bi bi-filetype-xml"></i> XML</a></li>
                 </ul>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" routerLink="/importar-dados">
+                  <i class="bi bi-upload"></i> Importar Dados
+                </a>
+              </li>
             }
           </ul>
 

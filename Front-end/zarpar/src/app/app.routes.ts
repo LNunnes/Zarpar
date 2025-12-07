@@ -5,6 +5,7 @@ import { HomeComponent } from './pages/home/home';
 import { PontoFormComponent } from './pages/ponto-form/ponto-form.component';
 import { authGuard } from './core/guards/auth.guard';
 import { PontoDetalheComponent } from './pages/ponto-detalhe/ponto-detalhe.component';
+import { ImportarDadosComponent } from './pages/importar-dados/importar-dados';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -24,6 +25,12 @@ export const routes: Routes = [
     },
 
     { path: 'pontos/:id', component: PontoDetalheComponent },
+
+    {
+      path: 'importar-dados',
+      component: ImportarDadosComponent,
+      canActivate: [authGuard]
+    },
 
     { path: '**', redirectTo: '' }
 ];
