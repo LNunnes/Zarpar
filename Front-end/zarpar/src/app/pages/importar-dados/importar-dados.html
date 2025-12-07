@@ -1,0 +1,180 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      
+      <!-- Cabeçalho -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="h2 fw-bold">
+            <i class="bi bi-upload"></i> Importar Dados
+          </h1>
+          <p class="text-muted mb-0">Importe pontos turísticos em lote através de arquivos</p>
+        </div>
+        <button class="btn btn-outline-secondary" (click)="voltar()">
+          <i class="bi bi-arrow-left"></i> Voltar
+        </button>
+      </div>
+
+      <!-- Card de Upload -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="bi bi-file-earmark-arrow-up"></i> Selecionar Arquivo</h5>
+        </div>
+        <div class="card-body">
+          
+          <div class="alert alert-info">
+            <strong><i class="bi bi-info-circle"></i> Formatos aceitos:</strong> JSON, CSV, XML
+          </div>
+
+          <div class="mb-3">
+            <label for="fileInput" class="form-label fw-bold">Arquivo para Importação</label>
+            <input 
+              type="file" 
+              class="form-control" 
+              id="fileInput" 
+              (change)="onFileSelected($event)" 
+              accept=".json,.csv,.xml"
+            >
+            <small class="text-muted">
+              Tamanho máximo: 10MB. Formatos: .json, .csv, .xml
+            </small>
+          </div>
+
+          @if (selectedFile()) {
+            <div class="alert alert-success">
+              <i class="bi bi-check-circle"></i> 
+              <strong>Arquivo selecionado:</strong> {{ selectedFile()!.name }} 
+              ({{ (selectedFile()!.size / 1024).toFixed(2) }} KB)
+            </div>
+          }
+
+          @if (erro()) {
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle"></i> {{ erro() }}
+            </div>
+          }
+
+          <div class="d-grid gap-2">
+            <button 
+              class="btn btn-primary btn-lg" 
+              (click)="importar()" 
+              [disabled]="!selectedFile() || isImporting()"
+            >
+              @if (isImporting()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Importando...
+              } @else {
+                <i class="bi bi-cloud-upload"></i> Importar Dados
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resultado da Importação -->
+      @if (resultado()) {
+        <div class="card shadow-sm">
+          <div class="card-header" [class.bg-success]="resultado()!.erros === 0" [class.bg-warning]="resultado()!.erros > 0">
+            <h5 class="mb-0 text-white">
+              <i class="bi bi-clipboard-check"></i> Relatório de Importação
+            </h5>
+          </div>
+          <div class="card-body">
+            
+            <div class="row text-center mb-3">
+              <div class="col-md-4">
+                <div class="p-3 bg-light rounded">
+                  <h3 class="mb-0 text-primary">{{ resultado()!.totalProcessados }}</h3>
+                  <small class="text-muted">Total Processados</small>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="p-3 bg-light rounded">
+                  <h3 class="mb-0 text-success">{{ resultado()!.sucessos }}</h3>
+                  <small class="text-muted">Sucessos</small>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="p-3 bg-light rounded">
+                  <h3 class="mb-0 text-danger">{{ resultado()!.erros }}</h3>
+                  <small class="text-muted">Erros</small>
+                </div>
+              </div>
+            </div>
+
+            @if (resultado()!.erros > 0) {
+              <hr>
+              <h6 class="fw-bold text-danger">
+                <i class="bi bi-exclamation-circle"></i> Erros Encontrados:
+              </h6>
+              <div class="list-group">
+                @for (erro of resultado()!.mensagensErro; track $index) {
+                  <div class="list-group-item list-group-item-danger">
+                    <i class="bi bi-x-circle"></i> {{ erro }}
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="alert alert-success mb-0">
+                <i class="bi bi-check-circle-fill"></i>
+                <strong>Importação concluída com sucesso!</strong>
+                Todos os {{ resultado()!.sucessos }} registros foram processados sem erros.
+              </div>
+            }
+
+            <div class="d-grid gap-2 mt-3">
+              <button class="btn btn-outline-primary" (click)="voltar()">
+                <i class="bi bi-arrow-left"></i> Voltar para Início
+              </button>
+            </div>
+
+          </div>
+        </div>
+      }
+
+      <!-- Exemplos de Formato -->
+      <div class="card shadow-sm mt-4">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-book"></i> Exemplos de Formato</h5>
+        </div>
+        <div class="card-body">
+          
+          <h6 class="fw-bold">JSON:</h6>
+          <pre class="bg-light p-3 rounded"><code>[
+  {{ '{' }}
+    "nome": "Cristo Redentor",
+    "descricao": "Monumento icônico do Rio de Janeiro",
+    "cidade": "Rio de Janeiro",
+    "estado": "RJ",
+    "pais": "Brasil",
+    "categoria": "MONUMENTO"
+  {{ '}' }}
+]</code></pre>
+
+          <h6 class="fw-bold mt-3">CSV:</h6>
+          <pre class="bg-light p-3 rounded"><code>nome,descricao,cidade,estado,pais,categoria
+"Cristo Redentor","Monumento icônico","Rio de Janeiro","RJ","Brasil","MONUMENTO"</code></pre>
+
+          <h6 class="fw-bold mt-3">XML:</h6>
+          <pre class="bg-light p-3 rounded"><code>&lt;pontosTuristicos&gt;
+  &lt;pontoTuristico&gt;
+    &lt;nome&gt;Cristo Redentor&lt;/nome&gt;
+    &lt;descricao&gt;Monumento icônico&lt;/descricao&gt;
+    &lt;cidade&gt;Rio de Janeiro&lt;/cidade&gt;
+    &lt;estado&gt;RJ&lt;/estado&gt;
+    &lt;pais&gt;Brasil&lt;/pais&gt;
+    &lt;categoria&gt;MONUMENTO&lt;/categoria&gt;
+  &lt;/pontoTuristico&gt;
+&lt;/pontosTuristicos&gt;</code></pre>
+
+          <div class="alert alert-warning mt-3">
+            <strong><i class="bi bi-lightbulb"></i> Dica:</strong> 
+            Você pode exportar dados existentes e usar como modelo para importação!
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
