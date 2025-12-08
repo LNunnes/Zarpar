@@ -190,26 +190,17 @@ UPDATE usuarios SET role = 'ADMIN' WHERE email = 'seu-email@exemplo.com';
 ---
 ## **Testes Automatizados**
 
-O projeto inclui testes automatizados para garantir a qualidade e o funcionamento correto das funcionalidades principais.
-
-### Executar Testes do Backend
+O projeto inclui 44 testes unitários que cobrem autenticação, CRUD de pontos, avaliações, upload de fotos, filtros e exportação de dados.
 
 ```bash
+# Backend
 cd Back-end/zarpar
 ./mvnw test
-```
 
-### Executar Testes do Frontend
-
-```bash
+# Frontend
 cd Front-end/zarpar
 npm test
 ```
-
-### Documentação Completa de Testes
-
-Para informações detalhadas sobre cobertura de testes e como executá-los, consulte:
-- 📋 [docs/EXECUTAR_TESTES.md](docs/EXECUTAR_TESTES.md)
 
 ---
 ## **Requisitos Funcionais Implementados**
