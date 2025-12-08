@@ -188,6 +188,30 @@ UPDATE usuarios SET role = 'ADMIN' WHERE email = 'seu-email@exemplo.com';
 - Email: `nuninhos@zarpar.local`
 - Senha: `dados1`
 ---
+## **Testes Automatizados**
+
+O projeto inclui testes automatizados para garantir a qualidade e o funcionamento correto das funcionalidades principais.
+
+### Executar Testes do Backend
+
+```bash
+cd Back-end/zarpar
+./mvnw test
+```
+
+### Executar Testes do Frontend
+
+```bash
+cd Front-end/zarpar
+npm test
+```
+
+### Documentação Completa de Testes
+
+Para informações detalhadas sobre cobertura de testes e como executá-los, consulte:
+- 📋 [docs/EXECUTAR_TESTES.md](docs/EXECUTAR_TESTES.md)
+
+---
 ## **Requisitos Funcionais Implementados**
 
 ## **Testando o Cache (Redis)**
