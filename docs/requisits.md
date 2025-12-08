@@ -232,6 +232,7 @@ O sistema utiliza arquitetura **Persistência Poliglota**, combinando diferentes
 - **NoSQL:** Spring Data MongoDB
 - **Cache:** Spring Cache + Redis
 - **Build:** Maven
+- **Deploy:** Docker
 
 #### Frontend
 - **Framework:** Angular 19
