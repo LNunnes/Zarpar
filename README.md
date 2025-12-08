@@ -188,6 +188,21 @@ UPDATE usuarios SET role = 'ADMIN' WHERE email = 'seu-email@exemplo.com';
 - Email: `nuninhos@zarpar.local`
 - Senha: `dados1`
 ---
+## **Testes Automatizados**
+
+O projeto inclui 44 testes unitários que cobrem autenticação, CRUD de pontos, avaliações, upload de fotos, filtros e exportação de dados.
+
+```bash
+# Backend
+cd Back-end/zarpar
+./mvnw test
+
+# Frontend
+cd Front-end/zarpar
+npm test
+```
+
+---
 ## **Requisitos Funcionais Implementados**
 
 ## **Testando o Cache (Redis)**
