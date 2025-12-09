@@ -1,5 +1,11 @@
 # **Zarpar - Plataforma de Turismo**
 
+Projeto para a Disciplina de Software para Persistência de Dados - 2025/2
+Grupo de Discentes: 
+- Lucas Gabriel Nunes Alves - 202201703
+- Sophia Fernandes Magalhães Almeida - 202201713
+- Victor Martins Vieira - 202204532
+
 Bem-vindo ao **Zarpar**, uma aplicação Fullstack robusta para gestão, avaliação e descoberta de pontos turísticos. O projeto utiliza uma arquitetura de **Persistência Poliglota**, extraindo o melhor desempenho de diferentes tecnologias de banco de dados.
 
 ## **Sobre o Projeto**
